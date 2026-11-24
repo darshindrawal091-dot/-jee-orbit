@@ -34,26 +34,38 @@
 
       <section class="stats-grid">
         <article class="panel stat-card">
-          <div class="eyebrow muted">STUDY STREAK</div>
+          <div class="eyebrow muted">STUDY STREAK & GOAL</div>
           <div class="stat-value" id="streak-value">0 days</div>
           <div class="stat-note" id="streak-note">Build your consistency</div>
-          <button id="studied-btn" class="button button-outline stat-action">Mark studied today</button>
+          
+          <div class="goal-progress-box">
+            <div class="goal-header"><span>Today's Goal: <b id="goal-target-label">6h</b></span><span id="goal-status-text">0h 0m studied</span></div>
+            <div class="timer-progress"><div id="goal-progress-bar" style="width: 0%;"></div></div>
+            <div class="stat-note" id="goal-left-text" style="margin-top:6px;">6h 0m remaining today</div>
+          </div>
+
+          <button id="studied-btn" class="button button-primary stat-action">Complete a day</button>
           <div class="stat-note">Longest streak: <b id="best-streak">0 days</b></div>
           <div class="week-progress" id="week-progress" aria-label="Weekly study progress"></div>
           <div class="stat-note" id="week-summary">0 of 7 days this week</div>
+          <canvas id="hours-chart" class="mini-chart" height="70" aria-label="Daily study hours chart"></canvas>
         </article>
+
         <article class="panel stat-card exam-card">
-          <div class="eyebrow muted">JEE MAIN COUNTDOWN</div>
-          <div class="stat-value" id="main-countdown">Set exam date</div>
-          <div class="stat-note" id="main-date-label">Choose your target date below</div>
-          <div class="exam-divider"></div>
-          <div class="eyebrow muted">JEE ADVANCED COUNTDOWN</div>
-          <div class="stat-value small-stat" id="advanced-countdown">Set exam date</div>
-          <div class="stat-note" id="advanced-date-label">Choose your target date below</div>
-          <div class="exam-date-inputs">
-            <label>JEE Main date<input id="main-date" type="date"></label>
-            <label>JEE Advanced date<input id="advanced-date" type="date"></label>
-            <button id="save-exam-dates" class="button button-outline">Save exam dates</button>
+          <div class="section-head">
+            <div class="eyebrow muted">EXAM COUNTDOWNS</div>
+            <button id="add-exam-btn" class="button button-outline" style="padding:4px 10px; font-size:10px;">+ Add Exam</button>
+          </div>
+          <div id="exams-container" class="exams-list-container">
+            <!-- Dynamically rendered exam cards -->
+          </div>
+          <div class="exam-date-inputs hidden" id="exam-form-box">
+            <label>Exam Name<input id="new-exam-name" type="text" placeholder="e.g. JEE Main Mock"></label>
+            <label>Exam Date<input id="new-exam-date" type="date"></label>
+            <div style="display:flex;gap:6px;width:100%;">
+              <button id="save-new-exam" class="button button-primary" style="flex:1;">Save Exam</button>
+              <button id="cancel-exam" class="button button-ghost" style="padding:10px;">Cancel</button>
+            </div>
           </div>
         </article>
       </section>
@@ -61,7 +73,10 @@
       <section class="timer-card panel">
         <div class="section-head">
           <div><div class="eyebrow muted">FOCUS COUNTDOWN</div><h2>Your timer</h2></div>
-          <span class="sync-pill" id="sync-status">Saved on this device</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button id="pip-btn" class="button button-outline" title="Pop out floating mini-timer" style="padding:6px 10px;font-size:11px;">🗗 PiP Timer</button>
+            <span class="sync-pill" id="sync-status">Saved on this device</span>
+          </div>
         </div>
         <div class="timer-display" id="timer-display">02:00:00</div>
         <div class="timer-progress"><div id="timer-progress-bar"></div></div>
@@ -72,30 +87,69 @@
           <button id="reset-btn" class="button button-ghost">Reset</button>
         </div>
         <div class="custom-time">
-          <div class="custom-label">CUSTOM DURATION</div>
-          <div class="time-inputs">
-            <label><input id="hours" type="number" min="0" max="999" value="2"><span>Hours</span></label>
-            <label><input id="minutes" type="number" min="0" max="59" value="0"><span>Minutes</span></label>
-            <label><input id="seconds" type="number" min="0" max="59" value="0"><span>Seconds</span></label>
-            <button id="apply-btn" class="button button-outline">Apply</button>
+          <div class="custom-label">TIMER & GOAL SETTINGS</div>
+          <div class="time-inputs" style="margin-top:10px;">
+            <label><input id="hours" type="number" min="0" max="99" value="2"><span>Hours</span></label>
+            <label><input id="minutes" type="number" min="0" max="59" value="0"><span>Mins</span></label>
+            <label><input id="seconds" type="number" min="0" max="59" value="0"><span>Secs</span></label>
+            <button id="apply-btn" class="button button-outline">Set Timer</button>
           </div>
-          <p class="hint">Change the duration any time. The countdown keeps its correct time if you close the tab.</p>
-          <div class="reminder-row"><div><b>2-hour study reminders</b><p class="hint">Reminders repeat while your study timer is running.</p></div><button id="reminder-btn" class="button button-outline">Enable reminders</button></div>
+          
+          <div class="time-inputs" style="margin-top:10px;">
+            <label><input id="daily-goal-hours" type="number" min="1" max="24" value="6"><span>Daily Target (Hours)</span></label>
+            <button id="apply-goal-btn" class="button button-outline">Set Goal</button>
+          </div>
+
+          <div class="reminder-row">
+            <div>
+              <b>Smart Reminders</b>
+              <p class="hint">Notify every <input id="reminder-interval-input" type="number" min="1" max="8" value="2" style="width:45px;background:#0b1626;border:1px solid #2c405a;color:#fff;border-radius:6px;padding:2px 4px;text-align:center;"> hours with remaining goal time.</p>
+            </div>
+            <button id="reminder-btn" class="button button-outline">Enable reminders</button>
+          </div>
           <p class="hint" id="reminder-status">Notifications are off.</p>
         </div>
       </section>
 
+      <!-- Coaching Marks & Percentage Tracker -->
+      <section class="panel" style="margin-top:17px;">
+        <div class="section-head">
+          <div><div class="eyebrow muted">COACHING TESTS</div><h2>Marks & percentage trend</h2></div>
+          <button id="toggle-mark-form" class="button button-outline" style="font-size:11px;padding:6px 12px;">+ Add Test Score</button>
+        </div>
+        <div id="mark-form-box" class="hidden" style="margin-top:15px;background:#0d1929;padding:15px;border-radius:14px;border:1px solid #ffffff12;">
+          <div class="time-inputs">
+            <label>Test Date<input id="test-date" type="date"></label>
+            <label>Marks Scored<input id="test-scored" type="number" step="0.5" placeholder="e.g. 210"></label>
+            <label>Max Marks
+              <select id="test-max" style="width:100%;background:#0b1626;border:1px solid #2c405a;border-radius:9px;color:var(--text);padding:11px 12px;font:600 14px 'DM Sans';">
+                <option value="300">300 (JEE Main)</option>
+                <option value="360">360 (JEE Adv)</option>
+                <option value="180">180 (JEE Adv)</option>
+                <option value="custom">Custom...</option>
+              </select>
+            </label>
+            <label id="custom-max-wrap" class="hidden">Custom Max<input id="test-max-custom" type="number" value="300"></label>
+          </div>
+          <button id="save-mark-btn" class="button button-primary" style="margin-top:12px;width:100%;">Save Test Score</button>
+        </div>
+        <div style="margin-top:15px;">
+          <canvas id="marks-chart" height="110" aria-label="Coaching test percentage trend chart"></canvas>
+        </div>
+        <div id="marks-list-summary" class="stat-note" style="margin-top:10px;">No tests recorded yet.</div>
+      </section>
+
       <section class="lower-grid">
         <article class="panel motivation">
-          <div class="eyebrow muted">DAILY RESET</div>
-          <h2>A little perspective.</h2>
+          <div class="eyebrow muted">JEE MOTIVATION</div>
+          <h2>Find your drive.</h2>
           <p id="quote-text" class="quote">You don't need a perfect day. You need to begin, then keep going.</p>
           <div class="video-box">
             <div class="play-icon">▶</div>
-            <div><b>Today's motivation video</b><span id="video-date">A fresh search for today</span></div>
+            <div><b>Today's JEE motivation video</b><span id="video-date">A fresh search for today</span></div>
           </div>
           <a id="video-link" class="button button-primary full" target="_blank" rel="noopener">Find today's short video ↗</a>
-          <p class="hint">Opens YouTube search results for a short JEE motivation video. Choose a video that feels useful, then get back to your work.</p>
+          <p class="hint">Opens YouTube search results for high-impact JEE motivation and consistency shorts.</p>
         </article>
 
         <article class="panel checklist">
@@ -113,6 +167,13 @@
 
       <footer><span>JEE ORBIT</span><span>Build consistency. One day at a time.</span></footer>
     </main>
+  </div>
+
+  <!-- PiP Floating Mini-Timer overlay container -->
+  <div id="pip-floating-widget" class="pip-widget hidden">
+    <div class="pip-header"><span>JEE Orbit Focus</span><button id="pip-close">×</button></div>
+    <div id="pip-time" class="pip-time">02:00:00</div>
+    <div id="pip-status" class="pip-status">Running</div>
   </div>
 
   <div id="toast" class="toast" role="status"></div>
