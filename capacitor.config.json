@@ -1,0 +1,10 @@
+{
+  "appId": "com.jeeorbit.app",
+  "appName": "JEE Orbit",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://hindrawal091.github.io/jee-orbit/",
+    "cleartext": true
+  }
+}
